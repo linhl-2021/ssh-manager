@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SSH管理器">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+    <title>SSH管理器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SSH管理器</h1>
+            <button id="addBtn" class="btn btn-primary">+ 添加配置</button>
+        </header>
+        
+        <div id="configList" class="config-list"></div>
+        
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalTitle">添加SSH配置</h2>
+                    <button id="closeModal" class="close-btn">&times;</button>
+                </div>
+                <form id="configForm">
+                    <input type="hidden" id="configId">
+                    <div class="form-group">
+                        <label for="configName">配置名称</label>
+                        <input type="text" id="configName" required placeholder="例如：我的服务器">
+                    </div>
+                    <div class="form-group">
+                        <label for="host">主机地址</label>
+                        <input type="text" id="host" required placeholder="例如：192.168.1.100">
+                    </div>
+                    <div class="form-group">
+                        <label for="port">端口</label>
+                        <input type="number" id="port" value="22" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input type="text" id="username" required placeholder="例如：root">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码（可选）</label>
+                        <input type="password" id="password" placeholder="留空使用密钥认证">
+                    </div>
+                    <div class="form-group">
+                        <label for="commands">执行命令（每行一条）</label>
+                        <textarea id="commands" rows="4" placeholder="ls -la&#10;uptime"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancelBtn" class="btn btn-secondary">取消</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>

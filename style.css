@@ -1,0 +1,285 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #f2f2f7;
+    color: #000;
+    min-height: 100vh;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.container {
+    max-width: 100%;
+    padding: 16px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px 0;
+}
+
+header h1 {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: #007aff;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+}
+
+.btn-secondary {
+    background: #e5e5ea;
+    color: #000;
+}
+
+.btn-secondary:hover {
+    background: #d1d1d6;
+}
+
+.btn-danger {
+    background: #ff3b30;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background: #d63027;
+}
+
+.btn-small {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+}
+
+.config-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.config-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.config-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.config-name {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.config-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.config-details {
+    color: #8e8e93;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.config-host {
+    font-weight: 500;
+    color: #000;
+}
+
+.config-commands {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e5ea;
+}
+
+.config-commands-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #8e8e93;
+}
+
+.command-list {
+    font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+    font-size: 13px;
+    background: #f2f2f7;
+    padding: 10px;
+    border-radius: 8px;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: #fff;
+    width: 100%;
+    max-height: 90vh;
+    border-radius: 16px 16px 0 0;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e5e5ea;
+}
+
+.modal-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #8e8e93;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+form {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #8e8e93;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #e5e5ea;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #007aff;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.form-actions .btn {
+    flex: 1;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #8e8e93;
+}
+
+.empty-state-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.empty-state-text {
+    font-size: 18px;
+}
+
+.shortcut-instructions {
+    padding: 0 20px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: #333;
+    white-space: pre-wrap;
+}
+
+.shortcut-config {
+    margin: 20px;
+    padding: 16px;
+    background: #f2f2f7;
+    border-radius: 12px;
+}
+
+.shortcut-config pre {
+    font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: #333;
+}
