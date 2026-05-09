@@ -70,7 +70,7 @@ function escapeHtml(text) {
 function openModal(title = '添加SSH配置', config = null) {
     modalTitle.textContent = title;
     configForm.reset();
-    
+
     if (config) {
         document.getElementById('configId').value = config.id;
         document.getElementById('configName').value = config.name;
@@ -83,7 +83,7 @@ function openModal(title = '添加SSH配置', config = null) {
         document.getElementById('configId').value = '';
         document.getElementById('port').value = '22';
     }
-    
+
     modal.classList.add('active');
 }
 
@@ -112,7 +112,7 @@ function deleteConfig(id) {
 
 function handleFormSubmit(e) {
     e.preventDefault();
-    
+
     const id = document.getElementById('configId').value;
     const configData = {
         id: id || Date.now().toString(),
@@ -123,7 +123,7 @@ function handleFormSubmit(e) {
         password: document.getElementById('password').value,
         commands: document.getElementById('commands').value
     };
-    
+
     if (id) {
         const index = configs.findIndex(c => c.id === id);
         if (index !== -1) {
@@ -132,7 +132,7 @@ function handleFormSubmit(e) {
     } else {
         configs.push(configData);
     }
-    
+
     saveConfigs();
     renderConfigs();
     closeModalHandler();
@@ -143,7 +143,7 @@ function bindEvents() {
     closeModal.addEventListener('click', closeModalHandler);
     cancelBtn.addEventListener('click', closeModalHandler);
     configForm.addEventListener('submit', handleFormSubmit);
-    
+
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             closeModalHandler();
@@ -156,40 +156,77 @@ function generateShortcut(id) {
     if (!config) return;
 
     const commands = config.commands ? config.commands.split('\n').filter(c => c.trim()) : [];
-    
-    let configText = `📱 ${config.name} 配置信息：
 
-【SSH连接】
-主机：${config.host}
-端口：${config.port}
-用户：${config.username}
-${config.password ? `密码：${config.password}` : '密码：(留空)'}
-`;
+    const shortcut = createShortcutJSON(config, commands);
+    const base64Shortcut = btoa(unescape(encodeURIComponent(shortcut)));
+    const importUrl = `shortcuts://import-shortcut?url=${encodeURIComponent(base64Shortcut)}`;
+
+    const autoImport = confirm(
+        `即将自动创建"${config.name}"的快捷指令\n\n` +
+        `主机：${config.host}\n` +
+        `用户：${config.username}\n` +
+        `命令：${commands.length}条\n\n` +
+        `点击"确定"将跳转到快捷指令应用添加快捷指令`
+    );
+
+    if (autoImport) {
+        window.location.href = importUrl;
+        setTimeout(() => {
+            alert('✅ 请在快捷指令应用中查看并添加新快捷指令');
+        }, 1500);
+    }
+}
+
+function createShortcutJSON(config, commands) {
+    const actions = [];
+
+    const sshParams = {
+        "WFSSHHost": config.host,
+        "WFSSHPort": config.port,
+        "WFSSHUser": config.username
+    };
+
+    if (config.password) {
+        sshParams["WFSSHPassword"] = config.password;
+    }
+
+    actions.push({
+        "WFWorkflowActionIdentifier": "is.workflow.actions.ssh",
+        "WFWorkflowActionParameters": sshParams
+    });
 
     if (commands.length > 0) {
-        configText += `
-【执行命令】
-`;
-        commands.forEach((cmd, index) => {
-            configText += `${index + 1}. ${cmd}
-`;
+        commands.forEach(cmd => {
+            actions.push({
+                "WFWorkflowActionIdentifier": "is.workflow.actions.sshexecutesshcommand",
+                "WFWorkflowActionParameters": {
+                    "WFSSHCommand": cmd
+                }
+            });
+        });
+    } else {
+        actions.push({
+            "WFWorkflowActionIdentifier": "is.workflow.actions.sshexecutesshcommand",
+            "WFWorkflowActionParameters": {
+                "WFSSHCommand": "echo '连接成功'"
+            }
         });
     }
 
-    let instructions = `📱 创建步骤：
-
-1️⃣ 点击下方按钮"复制配置"
-2️⃣ 打开"快捷指令"应用
-3️⃣ 点击"+"创建新快捷指令
-4️⃣ 搜索并添加"SSH"动作
-5️⃣ 粘贴配置信息填写
-6️⃣ 添加"执行SSH命令"动作（如有命令）
-7️⃣ 重命名为"${config.name}"
-8️⃣ 点击"完成"保存
-
-✨ 配置信息已准备好！`;
-
-    showShortcutModal(config.name, configText, instructions);
+    return JSON.stringify({
+        "WFWorkflowActions": actions,
+        "WFWorkflowName": config.name,
+        "WFWorkflowIcon": {
+            "WFWorkflowIconGlyphNumber": 59813,
+            "WFWorkflowIconColor": 4980736
+        },
+        "WFWorkflowTypes": [
+            "ActionExtension",
+            "Automation",
+            "WatchKit"
+        ],
+        "WFWorkflowMinimumClientVersion": 900
+    });
 }
 
 function showShortcutModal(name, configText, instructions) {
