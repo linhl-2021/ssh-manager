@@ -43,7 +43,7 @@ function renderConfigs() {
             <div class="config-header">
                 <div class="config-name">${escapeHtml(config.name)}</div>
                 <div class="config-actions">
-                    <button class="btn btn-small btn-primary" onclick="generateShortcut('${config.id}')">生成快捷指令</button>
+                    <button class="btn btn-small btn-primary" onclick="generateShortcut('${config.id}')">下载快捷指令</button>
                     <button class="btn btn-small btn-secondary" onclick="editConfig('${config.id}')">编辑</button>
                     <button class="btn btn-small btn-danger" onclick="deleteConfig('${config.id}')">删除</button>
                 </div>
@@ -158,23 +158,18 @@ function generateShortcut(id) {
     const commands = config.commands ? config.commands.split('\n').filter(c => c.trim()) : [];
 
     const shortcut = createShortcutJSON(config, commands);
-    const base64Shortcut = btoa(unescape(encodeURIComponent(shortcut)));
-    const importUrl = `shortcuts://import-shortcut?url=${encodeURIComponent(base64Shortcut)}`;
+    const blob = new Blob([shortcut], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
 
-    const autoImport = confirm(
-        `即将自动创建"${config.name}"的快捷指令\n\n` +
-        `主机：${config.host}\n` +
-        `用户：${config.username}\n` +
-        `命令：${commands.length}条\n\n` +
-        `点击"确定"将跳转到快捷指令应用添加快捷指令`
-    );
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${config.name}.shortcut`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 
-    if (autoImport) {
-        window.location.href = importUrl;
-        setTimeout(() => {
-            alert('✅ 请在快捷指令应用中查看并添加新快捷指令');
-        }, 1500);
-    }
+    alert(`✅ "${config.name}.shortcut" 已下载！\n\n下一步：\n1. 打开"文件"应用找到下载的文件\n2. 点击文件自动导入到快捷指令\n3. 或通过AirDrop分享到iOS设备`);
 }
 
 function createShortcutJSON(config, commands) {
@@ -226,62 +221,11 @@ function createShortcutJSON(config, commands) {
             "WatchKit"
         ],
         "WFWorkflowMinimumClientVersion": 900
-    });
-}
-
-function showShortcutModal(name, configText, instructions) {
-    let modal = document.getElementById('shortcutModal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'shortcutModal';
-        modal.className = 'modal';
-        modal.innerHTML = `
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 id="shortcutModalTitle">创建快捷指令</h2>
-                    <button class="close-btn" onclick="closeShortcutModal()">&times;</button>
-                </div>
-                <div class="shortcut-instructions" id="shortcutInstructions"></div>
-                <div class="shortcut-config" id="shortcutConfig"></div>
-                <div class="form-actions">
-                    <button class="btn btn-secondary" onclick="closeShortcutModal()">关闭</button>
-                    <button class="btn btn-primary" onclick="copyShortcutConfig()">复制配置</button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-    }
-
-    document.getElementById('shortcutModalTitle').textContent = `创建"${name}"快捷指令`;
-    document.getElementById('shortcutInstructions').textContent = instructions;
-    document.getElementById('shortcutConfig').innerHTML = `<pre>${configText}</pre>`;
-    modal.classList.add('active');
-    window.currentConfigText = configText;
-}
-
-function closeShortcutModal() {
-    document.getElementById('shortcutModal').classList.remove('active');
-}
-
-function copyShortcutConfig() {
-    const text = window.currentConfigText;
-    navigator.clipboard.writeText(text).then(() => {
-        alert('✅ 配置已复制到剪贴板！');
-    }).catch(() => {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        alert('✅ 配置已复制到剪贴板！');
-    });
+    }, null, 2);
 }
 
 window.editConfig = editConfig;
 window.deleteConfig = deleteConfig;
 window.generateShortcut = generateShortcut;
-window.closeShortcutModal = closeShortcutModal;
-window.copyShortcutConfig = copyShortcutConfig;
 
 init();
